@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  },
+  "name": "ofc",
+  "version": "1.0.0",
+  "main": "for_node.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
