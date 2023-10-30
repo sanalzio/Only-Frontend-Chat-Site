@@ -48,18 +48,20 @@ document.onkeyup = e => {
 var msgc = document.getElementById("msgcontainer")
 
 let dbcon = "";
+let data;
 
 fetch(`https://api.github.com/gists/${gistId}`)
     .then(response => response.json())
     .then(gistData => {
         dbcon=gistData.files[filename].content;
+        data=gistData;
         getmsgs(dbcon)
     });
 
 const headers = {
     'Authorization': `token ${personalAccessToken}`
 };
-function sendmsg(dbcon) {
+function sendmsg(data, dbcon) {
     let content = document.getElementById("con").value;
     let username = document.getElementById("uname").value;
     let password = document.getElementById("pass").value;
@@ -72,7 +74,7 @@ function sendmsg(dbcon) {
     fetch(`https://api.github.com/gists/${gistId}`, {
         method: 'PATCH',
         headers: headers,
-        body: JSON.stringify(gistData)
+        body: JSON.stringify(data)
     });
 }
 function getmsgs(dbcon) {
@@ -89,7 +91,7 @@ function getmsgs(dbcon) {
 const sbtn = document.getElementById("sbtn");
 sbtn.addEventListener("click", () => {
     sbtn.innerHTML = sbtn.innerHTML.replace('Send', '...');
-    sendmsg(dbcon);
+    sendmsg(data, dbcon);
     setTimeout(() => {
         sbtn.innerHTML = sbtn.innerHTML.replace('...', 'Send');
     }, 1000);
@@ -100,6 +102,7 @@ fetch(`https://api.github.com/gists/${gistId}`)
     .then(response => response.json())
     .then(gistData => {
         dbcon=gistData.files[filename].content;
+        data = gistData;
         getmsgs(dbcon);
         // gistData.files[filename].content
         // const fileContent = gistData.files[filename].content;
