@@ -47,48 +47,62 @@ document.onkeyup = e => {
 }*/
 var msgc = document.getElementById("msgcontainer")
 
+let dbcon = "";
+
 fetch(`https://api.github.com/gists/${gistId}`)
     .then(response => response.json())
     .then(gistData => {
-        getmsgs();
-        const headers = {
-            'Authorization': `token ${personalAccessToken}`
-        };
-        function sendmsg() {
-            let content = document.getElementById("con").value;
-            let username = document.getElementById("uname").value;
-            let password = document.getElementById("pass").value;
-            if(content===""){return;}
-            if(username===""){return;}
-            if(username=="Sanalzio" & password!=decoder("ԭʥԭʫʩϪ_Ϡʩʫ")){alert("Wrong password.");return;}
-            let con = gistData.files[filename].content;
-            let newco = content.replace("<", "&lt").replace(">", "&gt");
-            gistData.files[filename].content += (con.endsWith("\n")) ? username + "|" + newco : `\n${username}|${newco}`;
-            fetch(`https://api.github.com/gists/${gistId}`, {
-                method: 'PATCH',
-                headers: headers,
-                body: JSON.stringify(gistData)
-            });
-        }
-        function getmsgs() {
-            let msgs = gistData.files[filename].content.split("\n");
-            let newinner = "";
-            msgs.forEach(msg => {
-                newinner += `<div class="msg"><p><b>${msg.split("|")[0]}</b></p><p>${msg.split("|").slice(1).join("|")}</p></div>`
-            });
-            if (newinner != msgc.innerHTML) {
-                msgc.innerHTML = newinner;
-            }
-        }
+        dbcon=gistData.files[filename].content;
+        getmsgs(dbcon)
+    });
+
+const headers = {
+    'Authorization': `token ${personalAccessToken}`
+};
+function sendmsg(dbcon) {
+    let content = document.getElementById("con").value;
+    let username = document.getElementById("uname").value;
+    let password = document.getElementById("pass").value;
+    if(content===""){return;}
+    if(username===""){return;}
+    if(username=="Sanalzio" & password!=decoder("ԭʥԭʫʩϪ_Ϡʩʫ")){alert("Wrong password.");return;}
+    let con = dbcon
+    let newco = content.replace("<", "&lt").replace(">", "&gt");
+    dbcon += (con.endsWith("\n")) ? username + "|" + newco : `\n${username}|${newco}`;
+    fetch(`https://api.github.com/gists/${gistId}`, {
+        method: 'PATCH',
+        headers: headers,
+        body: JSON.stringify(gistData)
+    });
+}
+function getmsgs(dbcon) {
+    let msgs = dbcon.split("\n");
+    let newinner = "";
+    msgs.forEach(msg => {
+        newinner += `<div class="msg"><p><b>${msg.split("|")[0]}</b></p><p>${msg.split("|").slice(1).join("|")}</p></div>`
+    });
+    if (newinner != msgc.innerHTML) {
+        msgc.innerHTML = newinner;
+    }
+}
+
+const sbtn = document.getElementById("sbtn");
+sbtn.addEventListener("click", () => {
+    sbtn.innerHTML = sbtn.innerHTML.replace('Send', '...');
+    sendmsg(dbcon);
+    setTimeout(() => {
+        sbtn.innerHTML = sbtn.innerHTML.replace('...', 'Send');
+    }, 1000);
+});
+
+setInterval(() => {
+fetch(`https://api.github.com/gists/${gistId}`)
+    .then(response => response.json())
+    .then(gistData => {
+        dbcon=gistData.files[filename].content;
+        getmsgs(dbcon);
+        // gistData.files[filename].content
         // const fileContent = gistData.files[filename].content;
         // console.log(fileContent);
-        const sbtn = document.getElementById("sbtn");
-        sbtn.addEventListener("click", () => {
-            sbtn.innerHTML = sbtn.innerHTML.replace('Send', '...');
-            sendmsg();
-            setTimeout(() => {
-                sbtn.innerHTML = sbtn.innerHTML.replace('...', 'Send');
-            }, 1000);
-        });
-        setInterval(getmsgs, 3000);
     });
+}, 1000);
