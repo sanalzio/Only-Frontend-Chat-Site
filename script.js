@@ -108,4 +108,4 @@ fetch(`https://api.github.com/gists/${gistId}`)
         // const fileContent = gistData.files[filename].content;
         // console.log(fileContent);
     });
-}, 1000);
+}, 3000);
